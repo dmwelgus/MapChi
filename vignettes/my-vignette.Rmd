@@ -1,0 +1,85 @@
+---
+title: "MapChi"
+author: "David Welgus"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+MapChi is a collection of tools for making high quality maps in R. As the name suggests, the focus is on Chicago, but the basic tools could be easily extended to other cities. The functions in MapChi can be roughly divided into two buckets:
+
+1. Geocoding addresses in batch 
+2. Making maps
+
+This vignette focuses on making maps. A separate vignette deals with batch geocoding. 
+
+## Basic Maps
+
+The most basic mapping function in MapChi is called, fittingly, map_chi(background, lines, regions, title). The function returns an object of class 'ggplot,' which can be further modified using ggplot2. There are four arguments:
+
+* background: The basic background color
+* lines: The color of regional boundaries.
+* regions: The regions to be plotted. Options include: CPD districts ("districts"), zip codes ("zips"), community areas ("CAs"), 
+           and census tracts ("tracts"). 
+* title: an optional title. 
+
+```{r, fig.show = 'hold', fig.width = 4.5}
+library(MapChi)
+library(ggplot2)
+
+district_map <- map_chi(background = "grey", lines = "blue", regions = "districts", title_size = 13)
+district_map
+
+data(hom_14)
+district_map + geom_point(data = hom_14, aes(X.Coordinate, Y.Coordinate), size = .1) + ggtitle("Homicides in Chicago: 2014")
+
+```
+
+## Heat Maps
+
+Maps are commonly used to illustrate regional variation in some statistic of interest. For example, a map of violent crime in Chicago neighborhoods might color high crime neighborhoods with a dark blue and low crime neighborhoods with light blue. The basic workflow for making these maps with MapChi is straightforward:
+
+1. Create a data frame that summarizes the variation of interest. In the above example the table would be 77 X 2, one column to store the community area (77 in total) and one to store the violent crime rate. 
+
+2. Use heat_map_continuous() or heat_map_discrete() to create the map. Making a discrete heat map typically requires the intermediary step of grouping the outcome into finite bins. 
+
+```{r, fig.show = 'hold', fig.width = 4.5}
+library(dplyr)
+hom_sum <- dplyr::summarise(group_by(hom_14, Community.Area), homicides = n())
+
+heat_map_continuous(regions = "CAs", df.y = hom_sum, merge_var.y = "Community.Area", fill_var = "homicides", 
+                    legend_name = "Homicides", na_replace = 0, title = "Homicides by Community Area: 2014", title_size = 13)
+
+
+```
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

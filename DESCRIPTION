@@ -1,0 +1,24 @@
+Package: MapChi
+Type: Package
+Title: Tools for making maps of Chicago
+Authors@R: person("David", "Welgus", email = "dmwelgus@uchicago.edu", role = c("aut", "cre"))
+Version: 0.1.0
+Author: David Welgus
+Maintainer: David Welgus <dmwelgus@uchicago.edu>
+Description: MapChi is a set of functions designed to make it easier for Urban
+    Labs analysts to generate high quality maps of Chicago.
+License: None
+LazyData: TRUE
+Imports:
+    ggplot2,
+    dplyr,
+    stringr,
+    rgdal,
+    httr,
+    sp,
+    maptools,
+    rgeos
+RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
