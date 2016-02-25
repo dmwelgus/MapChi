@@ -67,7 +67,7 @@ Most of the parameters are self explanatory, but a few aren't:
 * regions_var: The variable in summary_df that specifies the region. 
 * fill_var: The variable that determines shading.
 * na_replace: In some cases the summary table will be missing certain regions. For example, hom_sum only 
-includes community areas with 1 or more homicides. In the example above these regions are recoded as zeros instead of missing. Missing values typically show up with an ugly grey color. For example,  
+includes community areas with 1 or more homicides. In the example above these regions are recoded as zeros instead of missing. Missing values typically show up as an ugly grey color. For example,  
 
 ```{r, fig.show = 'hold', fig.width = 4.5, message = FALSE}
 heat_map_continuous(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area", fill_var = "homicides", 
