@@ -4,7 +4,7 @@
 \alias{heat_map_continuous}
 \title{Create a heat map of Chicago with continuous shading.}
 \usage{
-heat_map_continuous(regions, df.y, merge_var.y, fill_var, legend_name,
+heat_map_continuous(regions, summary_df, regions_var, fill_var, legend_name,
   palette = NULL, low_color = "#fff5eb", high_color = "#7f2704",
   na_replace = NA, lines = "black", title = NULL, title_size = 20)
 }
@@ -12,11 +12,11 @@ heat_map_continuous(regions, df.y, merge_var.y, fill_var, legend_name,
 \item{regions}{The type of region to plot. Options include: "CAs", "tracts," "districts,"
 and "zips."}
 
-\item{df.y}{A data frame with summary statistics by region. Should have one row for each
+\item{summary_df}{A data frame with summary statistics by region. Should have one row for each
 region.}
 
-\item{merge_var.y}{The variable in df.y that identifies the region. For example, if type = "CAs"
-a common merge_var.y would be "Community.Areas." In general, merge_var.y should be numeric (e.g. use
+\item{regions_var}{The variable in df.y that identifies the region. For example, if type = "CAs"
+a common summary_var would be "Community.Areas." In general, regions_var should be numeric (e.g. use
 community area numbers, not names.).}
 
 \item{fill_var}{The variable that determines color. For example, if the map shows homicides by
@@ -51,7 +51,7 @@ data(hom_14)
 # Create summary table
 hom_sum <- dplyr::summarise(group_by(hom_14, District), homicides = n())
 
-h_map <- heat_map_continuous(type = "districts", df.y = hom_sum, merge_var.y = "District",
+h_map <- heat_map_continuous(type = "districts", summary_df = hom_sum, regions_var = "District",
                              fill_var = "homicides", legend_name = "Homicides",
                              na_replace = 0)
 }

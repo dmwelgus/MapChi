@@ -4,18 +4,18 @@
 \alias{heat_map_discrete}
 \title{Create a heat map of Chicago with discrete shading.}
 \usage{
-heat_map_discrete(regions, df.y, merge_var.y, fill_var, legend_name, palette,
-  lines = "black", title = NULL, title_size = 20)
+heat_map_discrete(regions, summary_df, regions_var, fill_var, legend_name,
+  palette, lines = "black", title = NULL, title_size = 20)
 }
 \arguments{
 \item{regions}{The type of region to plot. Options include: "CAs", "tracts," "districts,"
 and "zips."}
 
-\item{df.y}{A data frame with summary statistics by region. Should have one row for each
+\item{summary_df}{A data frame with summary statistics by region. Should have one row for each
 region.}
 
-\item{merge_var.y}{The variable in df.y that identifies the region. For example, if type = "CAs"
-a common merge_var.y would be "Community.Areas." In general, merge_var.y should be numeric (e.g. use
+\item{regions_var}{The variable in summary_df that identifies the region. For example, if type = "CAs"
+a common merge_var.y would be "Community.Areas." In general, regions_var should be numeric (e.g. use
 community area numbers, not names.).}
 
 \item{fill_var}{The variable that determines color. For example, if the map shows homicides by
@@ -52,7 +52,7 @@ hom_sum$range <- cut(hom_sum$homicides, c(0, 5, 10, 15, 20, 30, 40),
 
 library(RColorBrewer)
 colors <- brewer.pal(n = 6, name = "BuPu")
-hm_dis <- heat_map_discrete(type = "CAs", df.y = hom_sum, merge_var.y = "Community.Area",
+hm_dis <- heat_map_discrete(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area",
                             fill_var = "range", legend_name = "Total Homicides",
                             palette = colors, title = "Homicides by Community Area: 2014")
 }

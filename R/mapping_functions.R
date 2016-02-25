@@ -41,10 +41,10 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
 #
 #' @param regions The type of region to plot. Options include: "CAs", "tracts," "districts,"
 #' and "zips."
-#' @param df.y A data frame with summary statistics by region. Should have one row for each
+#' @param summary_df A data frame with summary statistics by region. Should have one row for each
 #' region.
-#' @param merge_var.y The variable in df.y that identifies the region. For example, if type = "CAs"
-#' a common merge_var.y would be "Community.Areas." In general, merge_var.y should be numeric (e.g. use
+#' @param regions_var The variable in df.y that identifies the region. For example, if type = "CAs"
+#' a common summary_var would be "Community.Areas." In general, regions_var should be numeric (e.g. use
 #' community area numbers, not names.).
 
 #' @param fill_var The variable that determines color. For example, if the map shows homicides by
@@ -68,12 +68,12 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
 #' # Create summary table
 #' hom_sum <- dplyr::summarise(group_by(hom_14, District), homicides = n())
 #'
-#' h_map <- heat_map_continuous(type = "districts", df.y = hom_sum, merge_var.y = "District",
+#' h_map <- heat_map_continuous(type = "districts", summary_df = hom_sum, regions_var = "District",
 #'                              fill_var = "homicides", legend_name = "Homicides",
 #'                              na_replace = 0)
 
 #' @export
-heat_map_continuous <- function(regions, df.y, merge_var.y,  fill_var, legend_name, palette = NULL,
+heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, legend_name, palette = NULL,
                                 low_color = "#fff5eb", high_color = "#7f2704", na_replace = NA,
                                 lines = "black", title = NULL, title_size = 20) {
 
@@ -105,7 +105,7 @@ heat_map_continuous <- function(regions, df.y, merge_var.y,  fill_var, legend_na
 
   merge_var.x <- merge_vars[types == regions]
 
-  df <- merge(chi.df, df.y, by.x = merge_var.x, by.y = merge_var.y, all.x = TRUE)
+  df <- merge(chi.df, summary_df, by.x = merge_var.x, by.y = regions_var, all.x = TRUE)
 
 
   df$fill_it <- df[, fill_var]
@@ -136,10 +136,10 @@ heat_map_continuous <- function(regions, df.y, merge_var.y,  fill_var, legend_na
 #
 #' @param regions The type of region to plot. Options include: "CAs", "tracts," "districts,"
 #' and "zips."
-#' @param df.y A data frame with summary statistics by region. Should have one row for each
+#' @param summary_df A data frame with summary statistics by region. Should have one row for each
 #' region.
-#' @param merge_var.y The variable in df.y that identifies the region. For example, if type = "CAs"
-#' a common merge_var.y would be "Community.Areas." In general, merge_var.y should be numeric (e.g. use
+#' @param regions_var The variable in summary_df that identifies the region. For example, if type = "CAs"
+#' a common merge_var.y would be "Community.Areas." In general, regions_var should be numeric (e.g. use
 #' community area numbers, not names.).
 
 #' @param fill_var The variable that determines color. For example, if the map shows homicides by
@@ -170,13 +170,13 @@ heat_map_continuous <- function(regions, df.y, merge_var.y,  fill_var, legend_na
 #'
 #' library(RColorBrewer)
 #' colors <- brewer.pal(n = 6, name = "BuPu")
-#' hm_dis <- heat_map_discrete(type = "CAs", df.y = hom_sum, merge_var.y = "Community.Area",
+#' hm_dis <- heat_map_discrete(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area",
 #'                             fill_var = "range", legend_name = "Total Homicides",
 #'                             palette = colors, title = "Homicides by Community Area: 2014")
 
 
 #' @export
-heat_map_discrete <- function(regions, df.y, merge_var.y,
+heat_map_discrete <- function(regions, summary_df, regions_var,
                               fill_var, legend_name, palette,
                               lines = "black", title = NULL, title_size = 20) {
 
@@ -190,10 +190,10 @@ heat_map_discrete <- function(regions, df.y, merge_var.y,
   merge_vars <- c("AREA_NUMBE", "TRACTCE10", "DIST_NUM", "ZIP")
   types      <- c("CAs", "tracts", "districts", "zips")
 
-  merge_var.x <- merge_vars[types == type]
+  merge_var.x <- merge_vars[types == regions]
 
 
-  df <- merge(chi.df, df.y, by.x = merge_var.x, by.y = merge_var.y, all.x = TRUE)
+  df <- merge(chi.df, summary_df, by.x = merge_var.x, by.y = regions_var, all.x = TRUE)
 
   df$fill_it <- df[, fill_var]
   df <- df[order(df$order), ]
