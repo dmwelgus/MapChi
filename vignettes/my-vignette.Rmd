@@ -9,24 +9,25 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-MapChi is a collection of tools for making high quality maps in R. As the name suggests, the focus is on Chicago, but the basic tools could be easily extended to other cities. The functions in MapChi can be roughly divided into two buckets:
+MapChi is a collection of tools for making high quality maps in R. As the name suggests, the focus is on Chicago, but the basic tools could be easily extended to other cities. The functions in MapChi generally serve two purposes:
 
 1. Geocoding addresses in batch 
 2. Making maps
 
-This vignette focuses on making maps. A separate vignette deals with batch geocoding. 
+This vignette focuses on making maps. 
 
 ## Basic Maps
 
-The most basic mapping function in MapChi is called, fittingly, map_chi(background, lines, regions, title). The function returns an object of class 'ggplot,' which can be further modified using ggplot2. There are four arguments:
+The most basic mapping function in MapChi is called, fittingly, map_chi(background, lines, regions, title). The function returns an object of class 'ggplot,' which can be further modified using ggplot2. There are five arguments:
 
 * background: The basic background color
 * lines: The color of regional boundaries.
 * regions: The regions to be plotted. Options include: CPD districts ("districts"), zip codes ("zips"), community areas ("CAs"), 
            and census tracts ("tracts"). 
 * title: an optional title. 
+* title_size
 
-```{r, fig.show = 'hold', fig.width = 4.5}
+```{r, fig.show = 'hold', fig.width = 4.5, message = FALSE}
 library(MapChi)
 library(ggplot2)
 
@@ -34,52 +35,65 @@ district_map <- map_chi(background = "grey", lines = "blue", regions = "district
 district_map
 
 data(hom_14)
+
+# Plot homicides and add a title. 
 district_map + geom_point(data = hom_14, aes(X.Coordinate, Y.Coordinate), size = .1) + ggtitle("Homicides in Chicago: 2014")
 
 ```
 
 ## Heat Maps
 
-Maps are commonly used to illustrate regional variation in some statistic of interest. For example, a map of violent crime in Chicago neighborhoods might color high crime neighborhoods with a dark blue and low crime neighborhoods with light blue. The basic workflow for making these maps with MapChi is straightforward:
+Maps are commonly used to illustrate regional variation in a statistic of interest. For example, a map of violent crime in Chicago neighborhoods might color high crime neighborhoods with a dark blue and low crime neighborhoods with light blue. The basic workflow for making these maps in MapChi is straightforward:
 
 1. Create a data frame that summarizes the variation of interest. In the above example the table would be 77 X 2, one column to store the community area (77 in total) and one to store the violent crime rate. 
 
-2. Use heat_map_continuous() or heat_map_discrete() to create the map. Making a discrete heat map typically requires the intermediary step of grouping the outcome into finite bins. 
+2. Use heat_map_continuous() or heat_map_discrete() to create the map. Making a discrete heat map typically requires the intermediate step of grouping the outcome into finite bins. 
 
-```{r, fig.show = 'hold', fig.width = 4.5}
+```{r, fig.show = 'hold', fig.width = 4.5, message = FALSE}
 library(dplyr)
+
+# Create summary table. 
 hom_sum <- dplyr::summarise(group_by(hom_14, Community.Area), homicides = n())
 
-heat_map_continuous(regions = "CAs", df.y = hom_sum, merge_var.y = "Community.Area", fill_var = "homicides", 
+heat_map_continuous(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area", fill_var = "homicides", 
                     legend_name = "Homicides", na_replace = 0, title = "Homicides by Community Area: 2014", title_size = 13)
 
 
 ```
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+Most of the parameters are self explanatory, but a few aren't:
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+* summary_df: The summary table described in 1 above. 
+* regions_var: The variable in summary_df that specifies the region. 
+* fill_var: The variable that determines shading.
+* na_replace: In some cases the summary table will be missing certain regions. For example, hom_sum only 
+includes community areas with 1 or more homicides. In the example above these regions are recoded as zeros instead of missing. Missing values typically show up with an ugly grey color. For example,  
+
+```{r, fig.show = 'hold', fig.width = 4.5, message = FALSE}
+heat_map_continuous(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area", fill_var = "homicides", 
+                    legend_name = "Homicides", title = "Homicides by Community Area: 2014", title_size = 13)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+In my experience, discrete heat maps are typically a bit easier to interpret than continuous heat maps. Making a discrete map is a little more labor intensive than making a continuous map, but the additional steps are pretty straightforward. 
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+1. After creating the summary table, you need to divide the outcome of interest into bins. For example, we might discretize the homicide variable by grouping community areas into ranges: 0-5 homicides, 6-10, 11-15, 16-20, 21-30, 31-40. 
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+2. You need to specify a set of discrete colors to match the bins. For this I recommend using RColorBrewer. 
 
-## More Examples
+Also, there is no NA replace option, so if missing values are an issue they need to be handled before calling 
+heat_map_distrete()
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+```{r, fig.show = 'hold', fig.width = 4.5, message = FALSE}
+library(RColorBrewer)
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
+# Manually add community areas with zero homicides
+zero_homs <- data.frame(Community.Area = c(1:77)[!c(1:77) %in% hom_sum$Community.Area], homicides = 0)
+hom_sum   <- rbind(hom_sum, zero_homs)
 
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+# Group into bins
+hom_sum$range <- hom_sum$range <- cut(hom_sum$homicides, c(0, 5, 10, 15, 20, 30, 40), include.lowest = TRUE, 
+                                      labels = c("0-5", "6-10", "11-15", "16-20", "21-30", "31-40"))
+# Define palette. 
+colors <- brewer.pal(n = 6, name = "BuPu")
+heat_map_discrete(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area", fill_var = "range", palette = colors,
+                  legend_name = "Homicides", title = "Homicides by Community Area: 2014", title_size = 13)
