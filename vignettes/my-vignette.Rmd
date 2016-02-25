@@ -74,7 +74,7 @@ heat_map_continuous(regions = "CAs", summary_df = hom_sum, regions_var = "Commun
                     legend_name = "Homicides", title = "Homicides by Community Area: 2014", title_size = 13)
 ```
 
-In my experience, discrete heat maps are usually a bit easier to interpret than continuous heat maps. Making a discrete map is a little more labor intensive than making a continuous map, but the additional steps are pretty straightforward. 
+In my experience, discrete heat maps are usually a bit easier to interpret than continuous heat maps. Making a discrete map is a more labor intensive than making a continuous map, but the additional steps are pretty straightforward. 
 
 1. After creating the summary table, you need to divide the outcome of interest into bins. For example, we might discretize the homicide variable by grouping community areas into ranges: 0-5 homicides, 6-10, 11-15, 16-20, 21-30, 31-40. 
 
