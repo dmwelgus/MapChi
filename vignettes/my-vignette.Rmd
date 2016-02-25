@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-MapChi is a collection of tools for making high quality maps in R. As the name suggests, the focus is on Chicago, but the basic tools could be easily extended to other cities. The functions in MapChi generally serve two purposes:
+MapChi is a collection of tools for making high quality maps of Chicago. The functions in MapChi generally serve two purposes:
 
 1. Geocoding addresses in batch 
 2. Making maps
@@ -18,7 +18,7 @@ This vignette focuses on making maps.
 
 ## Basic Maps
 
-The most basic mapping function in MapChi is called, fittingly, map_chi(background, lines, regions, title). The function returns an object of class 'ggplot,' which can be further modified using ggplot2. There are five arguments:
+The most basic mapping function in MapChi is called, fittingly, map_chi(). The function returns an object of class 'ggplot,' which can be further modified using ggplot2. There are five arguments:
 
 * background: The basic background color
 * lines: The color of regional boundaries.
@@ -43,9 +43,9 @@ district_map + geom_point(data = hom_14, aes(X.Coordinate, Y.Coordinate), size =
 
 ## Heat Maps
 
-Maps are commonly used to illustrate regional variation in a statistic of interest. For example, a map of violent crime in Chicago neighborhoods might color high crime neighborhoods with a dark blue and low crime neighborhoods with light blue. The basic workflow for making these maps in MapChi is straightforward:
+Maps are commonly used to illustrate regional variation along a dimension of interest. For example, a map of violent crime rates in Chicago neighborhoods might color high crime neighborhoods with a dark blue and low crime neighborhoods with light blue. The basic workflow for making heat maps in MapChi is straightforward:
 
-1. Create a data frame that summarizes the variation of interest. In the above example the table would be 77 X 2, one column to store the community area (77 in total) and one to store the violent crime rate. 
+1. Create a data frame that summarizes the variation of interest. In the above example the table would be 77 X 2 (one column to store the community areas--77 in total--and one to store the violent crime rates). 
 
 2. Use heat_map_continuous() or heat_map_discrete() to create the map. Making a discrete heat map typically requires the intermediate step of grouping the outcome into finite bins. 
 
@@ -78,7 +78,7 @@ In my experience, discrete heat maps are typically a bit easier to interpret tha
 
 1. After creating the summary table, you need to divide the outcome of interest into bins. For example, we might discretize the homicide variable by grouping community areas into ranges: 0-5 homicides, 6-10, 11-15, 16-20, 21-30, 31-40. 
 
-2. You need to specify a set of discrete colors to match the bins. For this I recommend using RColorBrewer. 
+2. You need to specify a set of discrete colors to match the bins. I recommend using RColorBrewer for this step. 
 
 Also, there is no NA replace option, so if missing values are an issue they need to be handled before calling 
 heat_map_distrete()
