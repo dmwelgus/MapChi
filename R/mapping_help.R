@@ -1,4 +1,11 @@
+# Some necessary modifications:
 
+#   a. Change convert() and add_regions() so that they work even if DF has
+#      has NAs in the lat/long fields. Ideally should not mess with order either.
+
+#      --Not sure best way to do this. One option would be to create a row var,
+#        separate into lat missing and lat-not-missing. Then Rbind, order by
+#        row var and drop row variable.
 
 spatial_df <- function(dir, file) {
 
@@ -47,17 +54,6 @@ convert <- function(df, lat, long, epsg = 4326) {
 }
 
 
-leaflet_chi <- function(dir, file) {
-
-
-  step_1 <- rgdal::readOGR(dir, file, verbose = FALSE)
-
-  chi    <- sp::spTransform(step_1, CRS("+init=epsg:4326"))
-
-  chi
-
-
-}
 
 #' Locates spatial coordinates within user-specified regions.
 #' @param df A data frame with lat/long or X/Y coordinates.
