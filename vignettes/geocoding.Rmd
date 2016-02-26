@@ -40,4 +40,30 @@ library(MapChi)
 
 data(food_inspections)
 head(food_inspections[, c("Address", "City", "State", "Zip")])
+
+# Create unique id
+food_inspections$id <- 1:nrow(food_inspections)
+
+address_list <- paste(food_inspections$id, food_inspections$Address, food_inspections$City, 
+                      food_inspections$State, food_inspections$Zip, sep = ", ")
+
+address_list[1:5]
 ```
+
+If you are missing any pieces of the address you need to leave a black spot between two commas. For example, if you are missing 'state' your entries should look like "123, 33 N. LaSalle, Chicago, , 60602", and if you are missing the zip code they should look like "123, 33 N. LaSalle, Chicago, IL, ". 
+
+Once you have your addresses formatted correctly and stored in a character vector you can use save_addresses() to save them to a directory. The function has three arguments:
+
+1. addresses: The address list. Should be a character vector
+2. dir: The directory where you want your address blocks to be stored. 
+3. root: The root name of your address blocks. They will be saved as "root_1.txt", "root_2.txt", etc...
+
+```{r, message = FALSE, eval = FALSE}
+
+address_dir <- "C:/Users/dmwelgus/Documents/testing_packages/address_dir"
+
+save_addresses(addresses = address_list, dir = address_dir, root = "inspections_addrs")
+
+# There should now be four files in address_dir: "inspections_addrs_1.txt", "inspection_addres_2.txt", etc...
+```
+
