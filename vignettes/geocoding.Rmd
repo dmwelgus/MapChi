@@ -1,0 +1,43 @@
+---
+title: "Geocoding with MapChi"
+author: "David Welgus"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{geocoding}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Geocoding a series of addresses is frequently the first step in making a map. Other common tasks include converting between coordinate systems and placing points in their appropriate regions (e.g. community areas or police districts). This vignette show how to complete these tasks with the MapChi package. 
+
+## Batch Geocoding
+
+There are many free tools for geocoding addresses one at a time. Most, unfortunately, limit you to around 2500 addresses a day. If you have a small number of addresses to geocode, I recommend using the geocode() function in the ggmap package. 
+
+```{r, message = FALSE}
+library(ggmap)
+
+addrs <- c("33 N. LaSalle, Chicago, IL, 60602", "756 West Irving Park Rd., Chicago, IL, 60613")
+
+addr_codes <- geocode(addrs, source = "google")
+addr_codes
+class(addr_codes)
+```
+
+What do you do if you need to geocode large batches of addresses? The MapChi package offers a feasible and straightforward way to do this using the US Census Department's geocoding API. The basic workflow is this:
+
+1. Format your addresses according to Census department specification and store in a single character vector. 
+
+2. Divide the address vector into chunks of 1000 and store in a directory. The directory should contain nothing but lists of addresses. The save_addresses() function automates this step.  
+
+3. Use geo_batch() to send addresses to the Census API. 
+
+We illustrate these steps using a dataset of food inspections from the City of Chicago data portal. 
+
+```{r, message = FALSE} 
+library(MapChi)
+
+data(food_inspections)
+head(food_inspections[, c("Address", "City", "State", "Zip")])
+```
