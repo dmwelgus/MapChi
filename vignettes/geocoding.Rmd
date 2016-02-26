@@ -54,8 +54,8 @@ If you are missing any pieces of the address you need to leave a black spot betw
 
 Once you have your addresses formatted correctly and stored in a character vector you can use save_addresses() to save them to a directory. The function has three arguments:
 
-1. addresses: The address list. Should be a character vector
-2. dir: The directory where you want your address blocks to be stored. 
+1. addresses: The address list. This should be a character vector
+2. dir: The directory where you want to store your address blocks.
 3. root: The root name of your address blocks. They will be saved as "root_1.txt", "root_2.txt", etc...
 
 ```{r, message = FALSE, eval = FALSE}
@@ -67,3 +67,11 @@ save_addresses(addresses = address_list, dir = address_dir, root = "inspections_
 # There should now be four files in address_dir: "inspections_addrs_1.txt", "inspection_addres_2.txt", etc...
 ```
 
+Now you are ready to geocode the addresses. 
+```{r, message = FALSE, eval = FALSE}
+geo_batch(address_dir)
+```
+
+A few notes on the output and warning messages. 
+
+## Converting to the Chicago coordinate system
