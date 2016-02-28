@@ -106,7 +106,7 @@ head(food_subset)
 ```
 
 ## Adding regional variables to a dataset. 
-Sometimes you just want to know what region an address is in. In this case all you need to do is geocode the address (see above) and then use the get_regions() function. The function takes a data frame and returns the same data frame with 1+ region variables added. 
+Sometimes you just want to know what region an address is in. In this case all you need to do is geocode the address (see above) and then use the get_regions() function. The function takes a data frame and returns the same data frame with 1+ regional variables added. 
 
 ```{r, message = FALSE}
 food_subset <- get_regions(df = food_subset, regions = "zips", lat = "Latitude", 
