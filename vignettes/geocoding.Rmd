@@ -76,7 +76,7 @@ A few notes on the output and warning messages.
 
 ## Converting to the Chicago coordinate system
 
-Text, text, text ...
+Most Chicago-based shape files are not on a traditional lat/long coordinate system. Occasionally tables on the data portal will have a couple fields labelled 'X.Coordinate'/'Y.Coordinate'. These are the x/y coordinates of most Chicago shape files. If you try to plot lat/long points an a map defined by x/y coordinates it will not work. The MapChi package has a convert() function to make your life easier in these circumstances. The function takes three arguments (df = a data frame with lat/long fields, lat = the lat field, long = the lonog field) and returns the input data frame with two additional columns: X_Coordinate and Y_Coordinate. 
 
 ```{r, message = FALSE}
 
@@ -90,3 +90,16 @@ food_subset <- convert(df = food_subset, lat = "Latitude", long = "Longitude")
 head(food_subset)
 ```
 
+## Adding regional variables to a dataset. 
+Sometimes you just want to know what region an address is in. In this case all you need to do is geocode the address (see above) and then use the get_regions() function. The function takes a data frame and returns the same data frame with 1+ region fields added. 
+
+```{r, message = FALSE}
+food_subset <- get_regions(df = food_subset, regions = "zips", lat = "Latitude", 
+                               long = "Longitude")
+food_subset <- get_regions(df = food_subset, regions = "CAs", lat = "Latitude", 
+                                          long = "Longitude")
+
+head(food_subset)
+```
+
+        
