@@ -37,19 +37,33 @@ spatial_df <- function(dir, file) {
 #' @export
 convert <- function(df, lat, long, epsg = 4326) {
 
-
   crs_string <- paste("+init=epsg", epsg, sep = ":")
 
-  df <- sp::SpatialPointsDataFrame(coords = df[, c(long, lat)],
-                                   data = df,
+
+  df$row <- 1:nrow(df)
+  naS <- is.na(df[, lat]) | is.na(df[, long])
+  df_na   <- df[naS, ]
+  df_comp <- df[!naS, ]
+
+  df_comp <- sp::SpatialPointsDataFrame(coords = df_comp[, c(long, lat)],
+                                   data = df_comp,
                                    proj4string = sp::CRS(crs_string))
 
   chi_coordinates <- sp::CRS("+proj=tmerc +lat_0=36.66666666666666 +lon_0=-88.33333333333333 +k=0.999975 +x_0=300000 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +ellps=GRS80 +towgs84=0,0,0")
 
-  df <- sp::spTransform(df, chi_coordinates)
+  df_comp <- sp::spTransform(df_comp, chi_coordinates)
+  df_comp <- cbind(df_comp@data, X_Coordinate = df_comp@coords[, 1], Y_Coordinate = df_comp@coords[, 2])
 
-  df <- cbind(df@data, X_Coordinate = df@coords[, 1], Y_Coordinate = df@coords[, 2])
+  if (nrow(df_na) > 0 ) {
+    df_na$X_Coordinate <- NA
+    df_na$Y_Coordinate <- NA
+  }
 
+  df <- rbind(df_comp, df_na)
+
+  df <- df[order(df$row), ]
+
+  df <- dplyr::select(df, -row)
   df
 }
 
@@ -73,23 +87,28 @@ get_regions <- function(df, regions, lat, long, X = NULL, Y = NULL, epsg = 4326)
 
   sp_df <- get(regions)
 
+  df$row <- 1:nrow(df)
+  naS <- is.na(df[, lat]) | is.na(df[, long])
+  df_na   <- df[naS, ]
+  df_comp <- df[!naS, ]
+
   if (!is.null(X)) {
 
-    df <- sp::SpatialPointsDataFrame(coords = df[, c(X, Y)],
-                                     data = df,
+    df_comp <- sp::SpatialPointsDataFrame(coords = df_comp[, c(X, Y)],
+                                     data = df_comp,
                                      proj4string = sp_df@proj4string)
   } else {
 
     crs_string <- paste("+init=epsg", epsg, sep = ":")
 
-    df <- sp::SpatialPointsDataFrame(coords = df[, c(long, lat)],
-                                     data = df,
+    df_comp <- sp::SpatialPointsDataFrame(coords = df_comp[, c(long, lat)],
+                                     data = df_comp,
                                      proj4string = sp::CRS(crs_string))
 
-    df <- sp::spTransform(df, sp_df@proj4string)
+    df_comp <- sp::spTransform(df_comp, sp_df@proj4string)
   }
 
-  regional_df <- sp::over(df, sp_df)
+  regional_df <- sp::over(df_comp, sp_df)
 
   keep_vars <- list(CAs = c("AREA_NUMBE", "COMMUNITY"), tracts = c("TRACTCE10"), districts = c("DIST_NUM"),
                     zips = c("ZIP"))
@@ -98,6 +117,11 @@ get_regions <- function(df, regions, lat, long, X = NULL, Y = NULL, epsg = 4326)
   regional_df[keepers] <- lapply(regional_df[keepers], as.character)
 
   regional_df <- regional_df[keepers]
-  cbind(df@data, regional_df)
+  df_comp <- cbind(df_comp@data, regional_df)
 
+  df_na[, keepers] <- NA
+
+  df <- rbind(df_comp, df_na)
+  df <- df[order(df$row), ]
+  df <- dplyr::select(df, -row)
 }
