@@ -9,10 +9,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Geocoding a series of addresses is frequently the first step in making a map. Other common tasks include converting between coordinate systems and placing points in their appropriate regions (e.g. community areas or police districts). This vignette show how to complete these tasks with the MapChi package. 
+This vignette covers three main topics. 
+
+1. Batch Geocoding
+2. Converting from lat/long to Chicago Coordinates
+3. Adding regional variables to a dataset 
+
+The MapChi package makes these common tasks significantly more straightforward than they would be using lower-level packages such as rgdal and sp. 
 
 ## Batch Geocoding
-
 There are many free tools for geocoding addresses one at a time. Most, unfortunately, limit you to around 2500 addresses a day. If you have a small number of addresses to geocode, I recommend using the geocode() function in the ggmap package. 
 
 ```{r, message = FALSE}
@@ -27,14 +32,18 @@ class(addr_codes)
 
 What do you do if you need to geocode large batches of addresses? The MapChi package offers a feasible and straightforward way to do this using the US Census Department's geocoding API. The basic workflow is this:
 
-1. Format your addresses according to Census department specification and store in a single character vector. 
+1. Format your addresses according to Census department specification and store them in a single character vector. 
 
-2. Divide the address vector into chunks of 1000 and store in a directory. The directory should contain nothing but lists of addresses. The save_addresses() function automates this step.  
+2. Divide the address vector into chunks of 1000 and store each chunk as a text file in a directory. The directory should contain nothing but lists of addresses. The save_addresses() function automates this step.  
 
 3. Use geo_batch() to send addresses to the Census API. 
 
 We illustrate these steps using a dataset of food inspections from the City of Chicago data portal. 
 
+### Step 1: Formatting the addresses
+Addresses need to be formatted according to Census specifications. The general pattern is this: "unique id, address, city, state, zip." If you are missing any pieces of the address you need to leave a blank spot between two commas. For example, if you are missing 'state' your entries should look like "123, 33 N. LaSalle, Chicago, , 60602", and if you are missing the zip code they should look like "123, 33 N. LaSalle, Chicago, IL, ". The only field that MUST be populated is the unique id. 
+
+Here is an example of a properly formatted address list.
 ```{r, message = FALSE} 
 library(MapChi)
 
@@ -50,33 +59,39 @@ address_list <- paste(food_inspections$id, food_inspections$Address, food_inspec
 address_list[1:5]
 ```
 
-If you are missing any pieces of the address you need to leave a black spot between two commas. For example, if you are missing 'state' your entries should look like "123, 33 N. LaSalle, Chicago, , 60602", and if you are missing the zip code they should look like "123, 33 N. LaSalle, Chicago, IL, ". 
-
-Once you have your addresses formatted correctly and stored in a character vector you can use save_addresses() to save them to a directory. The function has three arguments:
+### Step 2: Save the addresses in an empty directory
+Once you have your addresses formatted correctly and stored in a character vector you can use save_addresses() to write them to a directory. The function has three arguments:
 
 1. addresses: The address list. This should be a character vector
 2. dir: The directory where you want to store your address blocks.
-3. root: The root name of your address blocks. They will be saved as "root_1.txt", "root_2.txt", etc...
+3. root: The root name of your address blocks. The blocks will be saved as "root_1.txt", "root_2.txt", etc...
 
 ```{r, message = FALSE, eval = FALSE}
 
 address_dir <- "C:/Users/dmwelgus/Documents/testing_packages/address_dir"
-
 save_addresses(addresses = address_list, dir = address_dir, root = "inspections_addrs")
 
 # There should now be four files in address_dir: "inspections_addrs_1.txt", "inspection_addres_2.txt", etc...
 ```
 
+### Step 3: Geocode
 Now you are ready to geocode the addresses. 
 ```{r, message = FALSE, eval = FALSE}
 geo_batch(address_dir)
 ```
 
-A few notes on the output and warning messages. 
+If you use geo_batch() you will quickly discover that the Census API is not perfect. Fortunately, it tends to fail in predictable ways. In my experience, there are two ways the Census API can fail. 
+
+1. It sends back a 503 error. If this happens you will see the following message: "503 Error # n". 
+
+2. It sends back a dataset of all NAs. If this happens you will see the following mesage: "All NAs, Trying Again". 
+
+Finally, if a batch is successfully geocoded, you will see the following message: "Success!!!, n more to go". 
+
+The geo_batch() function will keep sending a block of addresses until it is successfully geocoded. Each time a block of addresses is sent you will see one of the three messages mentioned above. The success rate can vary from 0-100% depending (I assume) on the amount of traffic the server is handling. If you see six or more failures in a row you might want to push "Stop" and try again later. 
 
 ## Converting to the Chicago coordinate system
-
-Most Chicago-based shape files are not on a traditional lat/long coordinate system. Occasionally tables on the data portal will have a couple fields labelled 'X.Coordinate'/'Y.Coordinate'. These are the x/y coordinates of most Chicago shape files. If you try to plot lat/long points an a map defined by x/y coordinates it will not work. The MapChi package has a convert() function to make your life easier in these circumstances. The function takes three arguments (df = a data frame with lat/long fields, lat = the lat field, long = the lonog field) and returns the input data frame with two additional columns: X_Coordinate and Y_Coordinate. 
+Most Chicago-based shape files are not on the traditional lat/long coordinate system. If you try to plot lat/long points an a map defined by "Chicago coordinates" it will not work. The MapChi package has a convert() function that makes your life easier in these circumstances. The function takes three arguments (df = a data frame with lat/long fields, lat = the lat field, long = the lonog field) and returns the input data frame with two additional columns: X_Coordinate and Y_Coordinate. These are the X/Y coordinates of the Chicago coordidate system.
 
 ```{r, message = FALSE}
 
@@ -91,7 +106,7 @@ head(food_subset)
 ```
 
 ## Adding regional variables to a dataset. 
-Sometimes you just want to know what region an address is in. In this case all you need to do is geocode the address (see above) and then use the get_regions() function. The function takes a data frame and returns the same data frame with 1+ region fields added. 
+Sometimes you just want to know what region an address is in. In this case all you need to do is geocode the address (see above) and then use the get_regions() function. The function takes a data frame and returns the same data frame with 1+ region variables added. 
 
 ```{r, message = FALSE}
 food_subset <- get_regions(df = food_subset, regions = "zips", lat = "Latitude", 
