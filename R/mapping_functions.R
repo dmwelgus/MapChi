@@ -16,7 +16,7 @@
 #' @return A map of Chicago. More specifically, an object of type "ggplot."
 
 #' @export
-map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size = 20) {
+map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size = 15) {
 
 
   spatial_df <- get(regions)

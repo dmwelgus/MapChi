@@ -119,9 +119,13 @@ get_regions <- function(df, regions, lat, long, X = NULL, Y = NULL, epsg = 4326)
   regional_df <- regional_df[keepers]
   df_comp <- cbind(df_comp@data, regional_df)
 
-  df_na[, keepers] <- NA
+  if (nrow(df_na) > 0) {
+    df_na[, keepers] <- NA
+  }
 
   df <- rbind(df_comp, df_na)
   df <- df[order(df$row), ]
   df <- dplyr::select(df, -row)
+
+  df
 }
