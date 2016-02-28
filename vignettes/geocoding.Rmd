@@ -85,9 +85,6 @@ food_subset <- dplyr::select(food_inspections, Latitude, Longitude,
 
 head(food_subset)
 
-# Drop NAs
-food_subset <- dplyr::filter(food_subset, !is.na(Latitude))
-
 food_subset <- convert(df = food_subset, lat = "Latitude", long = "Longitude")
 
 head(food_subset)
