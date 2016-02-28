@@ -75,7 +75,7 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
 #' @export
 heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, legend_name, palette = NULL,
                                 low_color = "#fff5eb", high_color = "#7f2704", na_replace = NA,
-                                lines = "black", title = NULL, title_size = 20) {
+                                lines = "black", title = NULL, title_size = 15) {
 
 
   if (!is.null(palette)) {
@@ -178,7 +178,7 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
 #' @export
 heat_map_discrete <- function(regions, summary_df, regions_var,
                               fill_var, legend_name, palette,
-                              lines = "black", title = NULL, title_size = 20) {
+                              lines = "black", title = NULL, title_size = 15) {
 
   step_1 <- get(regions)
   step_1@data$id <- rownames(step_1@data)
