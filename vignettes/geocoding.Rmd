@@ -40,7 +40,7 @@ What do you do if you need to geocode large batches of addresses? The MapChi pac
 
 We illustrate these steps using a dataset of food inspections from the City of Chicago data portal. 
 
-### Step 1: Formatting the addresses
+#### Step 1: Formatting the addresses
 Addresses need to be formatted according to Census specifications. The general pattern is this: "unique id, address, city, state, zip." If you are missing any pieces of the address you need to leave a blank spot between two commas. For example, if you are missing 'state' your entries should look like "123, 33 N. LaSalle, Chicago, , 60602", and if you are missing the zip code they should look like "123, 33 N. LaSalle, Chicago, IL, ". The only field that MUST be populated is the unique id. 
 
 Here is an example of a properly formatted address list.
@@ -59,7 +59,7 @@ address_list <- paste(food_inspections$id, food_inspections$Address, food_inspec
 address_list[1:5]
 ```
 
-### Step 2: Save the addresses in an empty directory
+#### Step 2: Save the addresses in an empty directory
 Once you have your addresses formatted correctly and stored in a character vector you can use save_addresses() to write them to a directory. The function has three arguments:
 
 1. addresses: The address list. This should be a character vector
@@ -74,21 +74,21 @@ save_addresses(addresses = address_list, dir = address_dir, root = "inspections_
 # There should now be four files in address_dir: "inspections_addrs_1.txt", "inspection_addres_2.txt", etc...
 ```
 
-### Step 3: Geocode
+#### Step 3: Geocode
 Now you are ready to geocode the addresses. 
 ```{r, message = FALSE, eval = FALSE}
 geo_batch(address_dir)
 ```
 
-If you use geo_batch() you will quickly discover that the Census API is not perfect. Fortunately, it tends to fail in predictable ways. In my experience, there are two ways the Census API can fail. 
+If you use geo_batch() you will quickly discover that the Census API is not perfect. Fortunately, it tends to fail in predictable ways. In my experience, there are two ways it can fail. 
 
 1. It sends back a 503 error. If this happens you will see the following message: "503 Error # n". 
 
 2. It sends back a dataset of all NAs. If this happens you will see the following mesage: "All NAs, Trying Again". 
 
-Finally, if a batch is successfully geocoded, you will see the following message: "Success!!!, n more to go". 
+Finally, if a block is successfully geocoded, you will see the following message: "Success!!!, n more to go". 
 
-The geo_batch() function will keep sending a block of addresses until it is successfully geocoded. Each time a block of addresses is sent you will see one of the three messages mentioned above. The success rate can vary from 0-100% depending (I assume) on the amount of traffic the server is handling. If you see six or more failures in a row you might want to push "Stop" and try again later. 
+If the Census fails to geocode a block the first time it is sent, geo_batch() will keep sending it until success is achieved. Each time a block is sent you will see one of the three messages mentioned above. The success rate can vary from 0-100% depending (I assume) on the amount of traffic the server is handling. If you see six or more failures in a row you might want to push "Stop" and try again later.  
 
 ## Converting to the Chicago coordinate system
 Most Chicago-based shape files are not on the traditional lat/long coordinate system. If you try to plot lat/long points an a map defined by "Chicago coordinates" it will not work. The MapChi package has a convert() function that makes your life easier in these circumstances. The function takes three arguments (df = a data frame with lat/long fields, lat = the lat field, long = the lonog field) and returns the input data frame with two additional columns: X_Coordinate and Y_Coordinate. These are the X/Y coordinates of the Chicago coordidate system.

@@ -22,8 +22,7 @@ The most basic mapping function in MapChi is called, fittingly, map_chi(). The f
 
 * background: The basic background color
 * lines: The color of regional boundaries.
-* regions: The regions to be plotted. Options include: CPD districts ("districts"), zip codes ("zips"), community areas ("CAs"), 
-           and census tracts ("tracts"). 
+* regions: The regions to be plotted. Options include: CPD districts ("districts"), zip codes ("zips"), community areas ("CAs"), and census tracts ("tracts"). 
 * title: an optional title. 
 * title_size
 
@@ -66,12 +65,10 @@ Most of the parameters are self explanatory, but a few aren't:
 * summary_df: The summary table described in 1 above. 
 * regions_var: The variable in summary_df that specifies the region. 
 * fill_var: The variable that determines shading.
-* na_replace: In some cases the summary table will be missing certain regions. For example, hom_sum only 
-includes community areas with 1 or more homicides. In the example above these regions are recoded as zeros instead of missing. Missing values typically show up as an ugly grey color. For example,  
+* na_replace: In some cases the summary table will be missing certain regions. For example, hom_sum only includes community areas with 1 or more homicides. In the example above these regions are recoded as zeros instead of missing. Missing values typically show up as an ugly grey color. For example,  
 
 ```{r, fig.show = 'hold', fig.width = 4.5, message = FALSE}
-heat_map_continuous(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area", fill_var = "homicides", 
-                    legend_name = "Homicides", title = "Homicides by Community Area: 2014", title_size = 13)
+heat_map_continuous(regions = "CAs", summary_df = hom_sum, regions_var = "Community.Area", fill_var = "homicides", legend_name = "Homicides", title = "Homicides by Community Area: 2014", title_size = 13)
 ```
 
 In my experience, discrete heat maps are usually a bit easier to interpret than continuous heat maps. Making a discrete map is a more labor intensive than making a continuous map, but the additional steps are pretty straightforward. 
