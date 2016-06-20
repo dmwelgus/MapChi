@@ -6,7 +6,7 @@
 \usage{
 heat_map_continuous(regions, summary_df, regions_var, fill_var, legend_name,
   palette = NULL, low_color = "#fff5eb", high_color = "#7f2704",
-  na_replace = NA, lines = "black", title = NULL, title_size = 20)
+  na_replace = NA, lines = "black", title = NULL, title_size = 15)
 }
 \arguments{
 \item{regions}{The type of region to plot. Options include: "CAs", "tracts," "districts,"

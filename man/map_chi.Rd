@@ -4,7 +4,7 @@
 \alias{map_chi}
 \title{Create a basic map of Chicago with specified regional boundaries.}
 \usage{
-map_chi(background, lines, regions = "CAs", title = NULL, title_size = 20)
+map_chi(background, lines, regions = "CAs", title = NULL, title_size = 15)
 }
 \arguments{
 \item{background}{The background color.}

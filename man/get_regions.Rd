@@ -9,7 +9,7 @@ get_regions(df, regions, lat, long, X = NULL, Y = NULL, epsg = 4326)
 \arguments{
 \item{df}{A data frame with lat/long or X/Y coordinates.}
 
-\item{regions}{The type of region. Options include: "CAs", "districts", "tracts", and "zips".}
+\item{regions}{The type of region. Options include: "CAs", "districts", "tracts", "zips", and "wards."}
 
 \item{lat}{Name of the field storing latitude. Should be in quotes.}
 

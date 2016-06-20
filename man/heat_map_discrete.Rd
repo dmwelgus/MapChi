@@ -5,7 +5,7 @@
 \title{Create a heat map of Chicago with discrete shading.}
 \usage{
 heat_map_discrete(regions, summary_df, regions_var, fill_var, legend_name,
-  palette, lines = "black", title = NULL, title_size = 20)
+  palette, lines = "black", title = NULL, title_size = 15)
 }
 \arguments{
 \item{regions}{The type of region to plot. Options include: "CAs", "tracts," "districts,"
