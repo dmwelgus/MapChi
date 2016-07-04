@@ -88,25 +88,34 @@ get_regions <- function(df, regions, lat, long, X = NULL, Y = NULL, epsg = 4326)
   sp_df <- get(regions)
 
   df$row <- 1:nrow(df)
-  naS <- is.na(df[, lat]) | is.na(df[, long])
-  df_na   <- df[naS, ]
-  df_comp <- df[!naS, ]
-
-  if (!is.null(X)) {
-
-    df_comp <- sp::SpatialPointsDataFrame(coords = df_comp[, c(X, Y)],
-                                     data = df_comp,
-                                     proj4string = sp_df@proj4string)
-  } else {
-
+  
+  if (is.null(X)) {
+    
+    naS <- is.na(df[, lat]) | is.na(df[, long])
+    df_na   <- df[naS, ]
+    df_comp <- df[!naS, ]
+    
     crs_string <- paste("+init=epsg", epsg, sep = ":")
-
+    
     df_comp <- sp::SpatialPointsDataFrame(coords = df_comp[, c(long, lat)],
-                                     data = df_comp,
-                                     proj4string = sp::CRS(crs_string))
-
+                                          data = df_comp,
+                                          proj4string = sp::CRS(crs_string))
+    
     df_comp <- sp::spTransform(df_comp, sp_df@proj4string)
+    
+  } else {
+    
+    naS <- is.na(df[, X]) | is.na(df[, Y])
+    df_na   <- df[naS, ]
+    df_comp <- df[!naS, ]
+    
+    df_comp <- sp::SpatialPointsDataFrame(coords = df_comp[, c(X, Y)],
+                                          data = df_comp,
+                                          proj4string = sp_df@proj4string)
+    
+    
   }
+  
 
   regional_df <- sp::over(df_comp, sp_df)
 
