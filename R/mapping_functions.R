@@ -43,7 +43,7 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
 #' and "zips."
 #' @param summary_df A data frame with summary statistics by region. Should have one row for each
 #' region.
-#' @param regions_var The variable in df.y that identifies the region. For example, if type = "CAs"
+#' @param regions_var The variable in summary_df that identifies the region. For example, if type = "CAs"
 #' a common summary_var would be "Community.Areas." In general, regions_var should be numeric (e.g. use
 #' community area numbers, not names.).
 
