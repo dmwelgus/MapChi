@@ -1,4 +1,4 @@
-## Wrap the batch geocoding loop into a function with a single input: dir.
+## batch_geo. Same as geo_batch, but returns indices not matched.
 
 
 #' Geocode batches of addresses using the Census geocoding api.
@@ -12,21 +12,29 @@
 #' @examples geo_batch("/path/to/addresses")
 #' @return a data frame with lat/long coordinates for each address that was successfully coded and NA for all others.
 #' @export
-geo_batch <- function(address_dir) {
+batch_geo <- function(address_dir) {
 
   current_dir <- getwd()
   setwd(address_dir)
   files <- dir()
   output <- list()
 
+  # Load files to get
+
+  collect_indices <- c()
+
   i <- length(files)
 
   while (i > 0) {
 
+    f <- readLines(files[i])
+    indices <- vapply(f, FUN = function(x) strsplit(x, split = ",")[[1]][1], FUN.VALUE = character(1))
+    collect_indices <- append(collect_indices, indices)
+
     for(j in 1:20){
       x  <- httr::POST("http://geocoding.geo.census.gov/geocoder/locations/addressbatch",
-                             body = list(addressFile = httr::upload_file(files[i]), benchmark = 9,
-                             vintage = "Census2010_Census2010"), encode = "multipart")
+                       body = list(addressFile = httr::upload_file(files[i]), benchmark = 9,
+                                   vintage = "Census2010_Census2010"), encode = "multipart")
 
       if (x$status_code != 503) {
         break
@@ -63,21 +71,27 @@ geo_batch <- function(address_dir) {
 
       print("All NAs, Trying Again")
 
-      } else {
+    } else {
       i <- i - 1
 
       print(paste("Success!!!", i, "more to go"))
 
-      }
+    }
 
 
   }
 
   final <- dplyr::bind_rows(output)
 
+  # Now get indices that aren't in final and append to final. Then sort so final is in the same order as
+  # the original list of addresses.
+
+  collect_indices <- as.numeric(collect_indices)
+  add_indices     <- collect_indices[!collect_indices %in% final$id]
+
+  final$id[is.na(final$id)] <- add_indices
+
   setwd(current_dir)
 
   final
 }
-
-
