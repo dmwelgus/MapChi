@@ -21,15 +21,14 @@ batch_geo <- function(address_dir) {
 
   # Load files to get
 
-  collect_indices <- c()
 
+  collect_addrs   <- c()
   i <- length(files)
 
   while (i > 0) {
 
     f <- readLines(files[i])
-    indices <- vapply(f, FUN = function(x) strsplit(x, split = ",")[[1]][1], FUN.VALUE = character(1))
-    collect_indices <- append(collect_indices, indices)
+    collect_addrs   <- append(collect_addrs, f)
 
     for(j in 1:20){
       x  <- httr::POST("http://geocoding.geo.census.gov/geocoder/locations/addressbatch",
@@ -86,10 +85,20 @@ batch_geo <- function(address_dir) {
   # Now get indices that aren't in final and append to final. Then sort so final is in the same order as
   # the original list of addresses.
 
-  collect_indices <- as.numeric(collect_indices)
-  add_indices     <- collect_indices[!collect_indices %in% final$id]
+  splits  <- lapply(collect_addrs, FUN = function(x) strsplit(x, split = ",")[[1]])
+  indices <- unlist(lapply(splits, function(x) x[1]))
+  addrs   <- unlist(lapply(splits, function(x) x[2]))
+  cities  <- unlist(lapply(splits, function(x) x[3]))
+  states  <- unlist(lapply(splits, function(x) x[4]))
+  zips    <- unlist(lapply(splits, function(x) x[5]))
 
-  final$id[is.na(final$id)] <- add_indices
+  na_index <- which(!indices %in% final$id)
+
+  final$o_address[is.na(final$id)] <- addrs[na_index]
+  final$o_city[is.na(final$id)]    <- cities[na_index]
+  final$o_state[is.na(final$id)]   <- states[na_index]
+  final$o_zip[is.na(final$id)]     <- zips[na_index]
+  final$id[is.na(final$id)]        <- indices[na_index]
 
   setwd(current_dir)
 
