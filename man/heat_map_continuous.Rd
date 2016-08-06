@@ -15,7 +15,7 @@ and "zips."}
 \item{summary_df}{A data frame with summary statistics by region. Should have one row for each
 region.}
 
-\item{regions_var}{The variable in df.y that identifies the region. For example, if type = "CAs"
+\item{regions_var}{The variable in summary_df that identifies the region. For example, if type = "CAs"
 a common summary_var would be "Community.Areas." In general, regions_var should be numeric (e.g. use
 community area numbers, not names.).}
 
