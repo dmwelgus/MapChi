@@ -31,7 +31,7 @@ batch_geo <- function(address_dir) {
     collect_addrs   <- append(collect_addrs, f)
 
     for(j in 1:20){
-      x  <- httr::POST("http://geocoding.geo.census.gov/geocoder/locations/addressbatch",
+      x  <- httr::POST("https://geocoding.geo.census.gov/geocoder/locations/addressbatch",
                        body = list(addressFile = httr::upload_file(files[i]), benchmark = 9,
                                    vintage = "Census2010_Census2010"), encode = "multipart")
 
