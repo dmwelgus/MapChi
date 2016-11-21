@@ -16,8 +16,8 @@ Imports:
     rgdal,
     httr,
     sp,
-    maptools,
-    rgeos
+    maptools
+  
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown
