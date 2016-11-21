@@ -17,7 +17,6 @@ Imports:
     httr,
     sp,
     maptools
-  
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown
