@@ -40,7 +40,7 @@ census_geo <- function(file) {
 }
 
 
-#' Geocode batches of addresses using the Census geocoding api.
+#' Geocode batches of addresses using the Census geocoding api. This is a new, streamlined version of batch_geo.
 #'
 #' @param address_dir   A directory containing lists of addresses. Each list should consist of no more than 1000 addresses. The
 #' address directory should contain NOTHING BUT lists of addresses. Addresses must be formattated according to census specifications.
