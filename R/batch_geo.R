@@ -1,4 +1,4 @@
-## batch_geo. Same as geo_batch, but returns indices not matched.
+## batch_geo. Same as geo_batch, but returns ids of addresses not matched.
 
 
 #' Geocode batches of addresses using the Census geocoding api.
