@@ -1,3 +1,3 @@
 # MapChi
 
-Git repository for MapChi package. MapChi is a collection of tools that streamline several common GIS and data visualization tasks relevant to my current job (https://urbanlabs.uchicago.edu). 
+The MapChi package is a collection of tools that streamline several common GIS and data visualization tasks related to my current job (https://urbanlabs.uchicago.edu). 
