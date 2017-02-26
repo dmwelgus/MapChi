@@ -2,13 +2,12 @@
 % Please edit documentation in R/census_geo.R
 \name{census_geo}
 \alias{census_geo}
-\title{Geocode a single batch of 1000 addresses}
+\title{Geocode batches of addresses using the Census geocoding api.}
 \usage{
 census_geo(file)
 }
 \arguments{
-\item{address_dir}{A directory containing lists of addresses. Each list should consist of no more than 1000 addresses. The
-address directory should contain NOTHING BUT lists of addresses. Addresses must be formattated according to census specifications.
+\item{file}{A link to a file of up to 1,000 addresses. Addresses must be formattated according to census specifications.
 For more details see \url{https://www.census.gov/geo/maps-data/data/geocoder.html}. To ensure proper functioning, save
 your addresses using \code{\link{save_addresses}}.}
 }
@@ -16,10 +15,10 @@ your addresses using \code{\link{save_addresses}}.}
 a data frame with lat/long coordinates for each address that was successfully coded and NA for all others.
 }
 \description{
-Geocode a single batch of 1000 addresses
+Geocode batches of addresses using the Census geocoding api.
 }
 \examples{
-ce("file_name")
+census_geo("/path/to/file.txt")
 }
 \seealso{
 \code{\link{save_addresses}}
