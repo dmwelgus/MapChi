@@ -1,7 +1,5 @@
-## Wrap the batch geocoding loop into a function with a single input: dir.
 
-
-#' Geocode batches of addresses using the Census geocoding api.
+#' Geocode a single batch of 1,000 addresses using the Census geocoding api.
 #'
 #' @param file   A link to a file of up to 1,000 addresses. Addresses must be formattated according to census specifications.
 #' For more details see \url{https://www.census.gov/geo/maps-data/data/geocoder.html}. To ensure proper functioning, save

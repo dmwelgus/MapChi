@@ -2,7 +2,7 @@
 % Please edit documentation in R/census_geo.R
 \name{census_geo}
 \alias{census_geo}
-\title{Geocode batches of addresses using the Census geocoding api.}
+\title{Geocode a single batch of 1,000 addresses using the Census geocoding api.}
 \usage{
 census_geo(file)
 }
@@ -15,7 +15,7 @@ your addresses using \code{\link{save_addresses}}.}
 a data frame with lat/long coordinates for each address that was successfully coded and NA for all others.
 }
 \description{
-Geocode batches of addresses using the Census geocoding api.
+Geocode a single batch of 1,000 addresses using the Census geocoding api.
 }
 \examples{
 census_geo("/path/to/file.txt")
