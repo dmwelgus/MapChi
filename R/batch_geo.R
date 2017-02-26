@@ -16,13 +16,11 @@ batch_geo <- function(address_dir) {
 
   current_dir <- getwd()
   setwd(address_dir)
-  files <- dir()
-  output <- list()
-
-  # Load files to get
-
-
+  
+  files         <- dir()
+  output        <- list()
   collect_addrs <- c()
+  
   i <- length(files)
 
   while (i > 0) {
@@ -35,20 +33,19 @@ batch_geo <- function(address_dir) {
       print("All NAs, Trying Again")
 
     } else {
-      i <- i - 1
+      output[[i]]   <- h
       collect_addrs <- append(collect_addrs, f)
+      
+      i <- i - 1
       print(paste("Success!!!", i, "more to go"))
 
     }
-
-
   }
 
   final <- dplyr::bind_rows(output)
 
   # Now get indices that aren't in final and append to final. Then sort so final is in the same order as
   # the original list of addresses.
-
   splits  <- lapply(collect_addrs, FUN = function(x) strsplit(x, split = ",")[[1]])
   indices <- unlist(lapply(splits, function(x) x[1]))
   addrs   <- unlist(lapply(splits, function(x) x[2]))

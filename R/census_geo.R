@@ -20,23 +20,26 @@ census_geo <- function (file) {
     }
     print(paste("503 Error #", j))
   }
+  
   y <- httr::content(x, encoding = "UTF-8")
   df <- strsplit(y, split = "\\\n")[[1]]
   df <- sapply(df, strsplit, split = ",")
   clean <- lapply(df, length_15)
-  h <- t(as.data.frame(clean))
-  h <- as.data.frame(h)
+  
+  h   <- t(as.data.frame(clean))
+  h   <- as.data.frame(h)
   h[] <- lapply(h, as.character)
-  h[, c("V1", "V5", "V6", "V7", "V11", "V14", "V15")] <- lapply(h[, 
-                                                                  c("V1", "V5", "V6", "V7", "V11", "V14", "V15")], 
-                                                                strip_both)
-  h[, c("V2", "V8", "V12")] <- lapply(h[, c("V2", "V8", 
-                                            "V12")], strip_left)
+  
+  both_vars <- c("V1", "V5", "V6", "V7", "V11", "V14", "V15")
+  left_vars <- c("V2", "V8", "V12")
+  h[, both_vars] <- lapply(h[, both_vars], strip_both)
+  h[, left_vars] <- lapply(h[, left_vars], strip_left)
+  
   h$V13 <- strip_right(h$V13)
+  
   h[] <- lapply(h, stringr::str_trim)
-  names(h) <- c("id", "o_address", "o_city", "o_state", 
-                "o_zip", "status", "quality", "m_address", "m_city", 
-                "m_state", "m_zip", "long", "lat", "not_sure", "L_R")
+  names(h) <- c("id", "o_address", "o_city", "o_state", "o_zip", "status", "quality", 
+                "m_address", "m_city", "m_state", "m_zip", "long", "lat", "not_sure", "L_R")
   
   return(h)
   

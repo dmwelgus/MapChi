@@ -16,7 +16,8 @@ geo_batch <- function(address_dir) {
 
   current_dir <- getwd()
   setwd(address_dir)
-  files <- dir()
+  
+  files  <- dir()
   output <- list()
 
   i <- length(files)
@@ -42,7 +43,8 @@ geo_batch <- function(address_dir) {
 
   final <- dplyr::bind_rows(output)
   setwd(current_dir)
-  final
+  
+  return(final)
 }
 
 
