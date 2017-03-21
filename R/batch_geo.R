@@ -14,10 +14,7 @@
 #' @export
 batch_geo <- function(address_dir) {
 
-  current_dir <- getwd()
-  setwd(address_dir)
-  
-  files         <- dir()
+  files         <- dir(address_dir)
   output        <- list()
   collect_addrs <- c()
   
@@ -60,8 +57,6 @@ batch_geo <- function(address_dir) {
   final$o_state[is.na(final$id)]   <- states[na_index]
   final$o_zip[is.na(final$id)]     <- zips[na_index]
   final$id[is.na(final$id)]        <- indices[na_index]
-
-  setwd(current_dir)
 
   final
 }
