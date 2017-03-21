@@ -15,6 +15,7 @@
 geo_batch <- function(address_dir) {
 
   files  <- dir(address_dir)
+  files  <- paste(address_dir, files, sep = "/")
   output <- list()
 
   i <- length(files)

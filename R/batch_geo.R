@@ -15,6 +15,7 @@
 batch_geo <- function(address_dir) {
 
   files         <- dir(address_dir)
+  files         <- paste(address_dir, files, sep = "/")
   output        <- list()
   collect_addrs <- c()
   
