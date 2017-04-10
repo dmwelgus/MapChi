@@ -78,6 +78,9 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
                                 low_color = "#fff5eb", high_color = "#7f2704", na_replace = NA,
                                 lines = "black", title = NULL, title_size = 15, region_labels = FALSE) {
   
+  if (region_labels == TRUE & !regions %in% c("CAs", "districts")) {
+    stop("region_labels only available for Community Areas and Police Districts")
+  }
   
   if (!is.null(palette)) {
     
@@ -130,38 +133,16 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
   
   if(region_labels == FALSE){
     map_output
+  } else {
+    
+    centers <- sp::coordinates(step_1)
+    center_df <- data.frame(num = step_1@data[[merge_var.x]], center_x = centers[, 1], center_y = centers[, 2])
+    map_output + ggplot2::geom_text(data = center_df, ggplot2::aes(x = center_x, y = center_y, label = num))
   }
-  
-  else {
-    
-    ### attempts 
-    if(region_labels == TRUE & regions == "CAs"){
-      print("adding text for community area")
-      data(CAs)
-      centers <- coordinates(CAs)
-      center_df <- data.frame(ca_num = CAs@data$AREA_NUMBE, center_x = centers[, 1], center_y = centers[, 2])
-      
-      map_output + geom_text(data = center_df, aes(x = center_x, y = center_y, label = ca_num))
-    }
-    
-    
-    else if(region_labels == TRUE & regions == "districts"){
-      print("adding text for districts")
-      data(districts)
-      centers <- coordinates(districts)
-      center_dis <- data.frame(dis_num = districts@data$DIST_NUM, center_x = centers[, 1], center_y = centers[, 2])
-      
-      map_output + geom_text(data = center_dis, aes(x = center_x, y = center_y, label = dis_num))
-      
-    }
-    
-    else {
-      print("Error - can only add labels for the following region types: districts or CAs. Map will not include region labels")
-      map_output
-    }
-  }
-  
 }
+  
+  
+
 
 
 # Discrete color palette
@@ -218,6 +199,10 @@ heat_map_discrete <- function(regions, summary_df, regions_var,
                               fill_var, legend_name, palette, na_replace = NA,
                               lines = "black", title = NULL, title_size = 15, region_labels = FALSE) {
   
+  if (region_labels == TRUE & !regions %in% c("CAs", "districts")) {
+    stop("region_labels only available for Community Areas and Police Districts")
+  }
+  
   step_1 <- get(regions)
   step_1@data$id <- rownames(step_1@data)
   
@@ -255,35 +240,12 @@ heat_map_discrete <- function(regions, summary_df, regions_var,
   
   if(region_labels == FALSE){
     map_output
-  }
-  
-  else {
+  } else {
     
-    ### attempts 
-    if(region_labels == TRUE & regions == "CAs"){
-      print("adding text for community area")
-      data(CAs)
-      centers <- coordinates(CAs)
-      center_df <- data.frame(ca_num = CAs@data$AREA_NUMBE, center_x = centers[, 1], center_y = centers[, 2])
-      
-      map_output + geom_text(data = center_df, aes(x = center_x, y = center_y, label = ca_num))
-    }
-    
-    
-    else if(region_labels == TRUE & regions == "districts"){
-      print("adding text for districts")
-      data(districts)
-      centers <- coordinates(districts)
-      center_dis <- data.frame(dis_num = districts@data$DIST_NUM, center_x = centers[, 1], center_y = centers[, 2])
-      
-      map_output + geom_text(data = center_dis, aes(x = center_x, y = center_y, label = dis_num))
-      
-    }
-    
-    else {
-      print("Error - can only add labels for the following region types: districts or CAs. Map will not include region labels")
-      map_output
-    }
+    centers <- sp::coordinates(step_1)
+    center_df <- data.frame(num = step_1@data[[merge_var.x]], center_x = centers[, 1], center_y = centers[, 2])
+    map_output + ggplot2::geom_text(data = center_df, ggplot2::aes(x = center_x, y = center_y, label = num))
   }
   
 }
+
