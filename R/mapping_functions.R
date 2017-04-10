@@ -17,10 +17,10 @@
 
 #' @export
 map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size = 15) {
-
-
+  
+  
   spatial_df <- get(regions)
-
+  
   map <- ggplot2::ggplot(spatial_df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group), fill = background) +
     ggplot2::geom_path(ggplot2::aes(long, lat, group = group), color = lines) +
     ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
@@ -30,7 +30,7 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
                    panel.grid.minor = ggplot2::element_line(colour = "white")) +
     ggplot2::coord_equal() +
     ggplot2::ggtitle(title)
-
+  
   map
 }
 
@@ -59,7 +59,8 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
 #' @param lines Color of border lines. Default is black.
 #' @param title Title.
 #' @param title_size Title size.
-#'
+#' @param region_labels Option to add labels for CAs or districts. Default is false 
+#' 
 #' @return A map of Chicago. More specifically, an object of type "ggplot."
 
 #' @examples
@@ -75,45 +76,44 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
 #' @export
 heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, legend_name, palette = NULL,
                                 low_color = "#fff5eb", high_color = "#7f2704", na_replace = NA,
-                                lines = "black", title = NULL, title_size = 15) {
-
-
+                                lines = "black", title = NULL, title_size = 15, region_labels = FALSE) {
+  
+  
   if (!is.null(palette)) {
-
+    
     colors <- c("green", "blue", "red", "orange", "purple")
     low    <- c("#e5f5f9", "#deebf7", "#fee0d2", "#fee6ce", "#efedf5")
     high   <- c("#00441b", "#08306b", "#67000d", "#7f2704", "#3f007d")
-
+    
     min_color <- low[colors  == palette]
     max_color <- high[colors == palette]
-
+    
   } else {
-
+    
     min_color <- low_color
     max_color <- high_color
   }
-
+  
   step_1 <- get(regions)
   step_1@data$id <- rownames(step_1@data)
-
+  
   step_2 <- ggplot2::fortify(step_1)
-
+  
   chi.df <- merge(step_2, step_1@data, by = "id")
-
+  
   merge_vars <- c("AREA_NUMBE", "TRACTCE10", "DIST_NUM", "ZIP")
   types      <- c("CAs", "tracts", "districts", "zips")
-
+  
   merge_var.x <- merge_vars[types == regions]
-
+  
   df <- merge(chi.df, summary_df, by.x = merge_var.x, by.y = regions_var, all.x = TRUE)
-
-
+  
+  
   df$fill_it <- df[, fill_var]
   df$fill_it[is.na(df$fill_it)] <- na_replace
-
+  
   df <- df[order(df$order), ]
-
-  ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
+  map_output <- ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
     ggplot2::geom_path(ggplot2::aes(long, lat, group = group), color = lines) +
     ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_blank(), axis.title = ggplot2::element_blank(),
@@ -122,12 +122,45 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
                    panel.grid.minor = ggplot2::element_line(colour = "white")) +
     ggplot2::coord_equal() +
     ggplot2::scale_fill_continuous(low = min_color, high = max_color,
-                          guide = ggplot2::guide_colorbar(title = legend_name, title.theme = ggplot2::element_text(size = 13, angle = 0),
-                                                 label.theme = ggplot2::element_text(size = 11, angle = 0))) +
+                                   guide = ggplot2::guide_colorbar(title = legend_name, title.theme = ggplot2::element_text(size = 13, angle = 0),
+                                                                   label.theme = ggplot2::element_text(size = 11, angle = 0))) +
     ggplot2::ggtitle(title)
-
-
-
+  
+  
+  
+  if(region_labels == FALSE){
+    map_output
+  }
+  
+  else {
+    
+    ### attempts 
+    if(region_labels == TRUE & regions == "CAs"){
+      print("adding text for community area")
+      data(CAs)
+      centers <- coordinates(CAs)
+      center_df <- data.frame(ca_num = CAs@data$AREA_NUMBE, center_x = centers[, 1], center_y = centers[, 2])
+      
+      map_output + geom_text(data = center_df, aes(x = center_x, y = center_y, label = ca_num))
+    }
+    
+    
+    else if(region_labels == TRUE & regions == "districts"){
+      print("adding text for districts")
+      data(districts)
+      centers <- coordinates(districts)
+      center_dis <- data.frame(dis_num = districts@data$DIST_NUM, center_x = centers[, 1], center_y = centers[, 2])
+      
+      map_output + geom_text(data = center_dis, aes(x = center_x, y = center_y, label = dis_num))
+      
+    }
+    
+    else {
+      print("Error - can only add labels for the following region types: districts or CAs. Map will not include region labels")
+      map_output
+    }
+  }
+  
 }
 
 
@@ -147,9 +180,13 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
 #'
 #' @param legend_name Self Explanatory. Should be a character vector of length one.
 #' @param palette The color palette. Current options are: green, blue, red, organge, and purple.
+#' @param na_replace What value should replace NAs in the fill_var. This arises most commonly in
+#' maps of homicides, where regions with zero homicides are sometimes missing from df.y. Add the 
+#' lowest discrete value for your scale. 
 #' @param lines Color of border lines. Default is black.
 #' @param title Title.
 #' @param title_size Title size.
+#' @param region_labels Option to add labels for CAs or districts. Default is false 
 #'
 #' @return A map of Chicago. More specifically, an object of type "ggplot."
 
@@ -157,7 +194,8 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
 #' data(hom_14)
 #' library(dplyr)
 #' hom_sum <- dplyr::summarise(group_by(hom_14, Community.Area), homicides = n())
-#'
+#' 
+#' There is now an na_replace option so disregard the following: 
 #' # No na_replace option for discrete maps. Need to manually add zero homicide CAs.
 #' additions <- c(1:77)[which(!c(1:77) %in% hom_sum$Community.Area)]
 
@@ -177,28 +215,33 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
 
 #' @export
 heat_map_discrete <- function(regions, summary_df, regions_var,
-                              fill_var, legend_name, palette,
-                              lines = "black", title = NULL, title_size = 15) {
-
+                              fill_var, legend_name, palette, na_replace = NA,
+                              lines = "black", title = NULL, title_size = 15, region_labels = FALSE) {
+  
   step_1 <- get(regions)
   step_1@data$id <- rownames(step_1@data)
-
+  
   step_2 <- ggplot2::fortify(step_1)
-
+  
   chi.df <- merge(step_2, step_1@data, by = "id")
-
+  
   merge_vars <- c("AREA_NUMBE", "TRACTCE10", "DIST_NUM", "ZIP")
   types      <- c("CAs", "tracts", "districts", "zips")
-
+  
   merge_var.x <- merge_vars[types == regions]
-
-
+  
+  
   df <- merge(chi.df, summary_df, by.x = merge_var.x, by.y = regions_var, all.x = TRUE)
-
+  
   df$fill_it <- df[, fill_var]
+  # add in na_replace 
+  df$fill_it[is.na(df$fill_it)] <- na_replace
+  
+  
+  
   df <- df[order(df$order), ]
-
-  ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
+  
+  map_output <- ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
     ggplot2::geom_path(ggplot2::aes(long, lat, group = group), color = lines) +
     ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_blank(), axis.title = ggplot2::element_blank(),
@@ -207,8 +250,40 @@ heat_map_discrete <- function(regions, summary_df, regions_var,
                    panel.grid.minor = ggplot2::element_line(colour = "white")) +
     ggplot2::coord_equal() +
     ggplot2::scale_fill_manual(values = palette, guide = ggplot2::guide_legend(title = legend_name, title.theme = ggplot2::element_text(size = 13, angle = 0),
-                                                             label.theme = ggplot2::element_text(size = 11, angle = 0))) +
+                                                                               label.theme = ggplot2::element_text(size = 11, angle = 0))) +
     ggplot2::ggtitle(title)
-
+  
+  if(region_labels == FALSE){
+    map_output
+  }
+  
+  else {
+    
+    ### attempts 
+    if(region_labels == TRUE & regions == "CAs"){
+      print("adding text for community area")
+      data(CAs)
+      centers <- coordinates(CAs)
+      center_df <- data.frame(ca_num = CAs@data$AREA_NUMBE, center_x = centers[, 1], center_y = centers[, 2])
+      
+      map_output + geom_text(data = center_df, aes(x = center_x, y = center_y, label = ca_num))
+    }
+    
+    
+    else if(region_labels == TRUE & regions == "districts"){
+      print("adding text for districts")
+      data(districts)
+      centers <- coordinates(districts)
+      center_dis <- data.frame(dis_num = districts@data$DIST_NUM, center_x = centers[, 1], center_y = centers[, 2])
+      
+      map_output + geom_text(data = center_dis, aes(x = center_x, y = center_y, label = dis_num))
+      
+    }
+    
+    else {
+      print("Error - can only add labels for the following region types: districts or CAs. Map will not include region labels")
+      map_output
+    }
+  }
+  
 }
-
