@@ -6,7 +6,8 @@
 \usage{
 heat_map_continuous(regions, summary_df, regions_var, fill_var, legend_name,
   palette = NULL, low_color = "#fff5eb", high_color = "#7f2704",
-  na_replace = NA, lines = "black", title = NULL, title_size = 15)
+  na_replace = NA, lines = "black", title = NULL, title_size = 15,
+  region_labels = FALSE)
 }
 \arguments{
 \item{regions}{The type of region to plot. Options include: "CAs", "tracts," "districts,"
@@ -38,6 +39,8 @@ maps of homicides, where regions with zero homicides are sometimes missing from 
 \item{title}{Title.}
 
 \item{title_size}{Title size.}
+
+\item{region_labels}{Option to add labels for CAs or districts. Default is false}
 }
 \value{
 A map of Chicago. More specifically, an object of type "ggplot."

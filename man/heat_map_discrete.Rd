@@ -5,7 +5,8 @@
 \title{Create a heat map of Chicago with discrete shading.}
 \usage{
 heat_map_discrete(regions, summary_df, regions_var, fill_var, legend_name,
-  palette, lines = "black", title = NULL, title_size = 15)
+  palette, na_replace = NA, lines = "black", title = NULL,
+  title_size = 15, region_labels = FALSE)
 }
 \arguments{
 \item{regions}{The type of region to plot. Options include: "CAs", "tracts," "districts,"
@@ -25,11 +26,17 @@ police district, the fill_var would be the field that contains homicide totals.}
 
 \item{palette}{The color palette. Current options are: green, blue, red, organge, and purple.}
 
+\item{na_replace}{What value should replace NAs in the fill_var. This arises most commonly in
+maps of homicides, where regions with zero homicides are sometimes missing from df.y. Add the 
+lowest discrete value for your scale.}
+
 \item{lines}{Color of border lines. Default is black.}
 
 \item{title}{Title.}
 
 \item{title_size}{Title size.}
+
+\item{region_labels}{Option to add labels for CAs or districts. Default is false}
 }
 \value{
 A map of Chicago. More specifically, an object of type "ggplot."
@@ -42,6 +49,7 @@ data(hom_14)
 library(dplyr)
 hom_sum <- dplyr::summarise(group_by(hom_14, Community.Area), homicides = n())
 
+There is now an na_replace option so disregard the following: 
 # No na_replace option for discrete maps. Need to manually add zero homicide CAs.
 additions <- c(1:77)[which(!c(1:77) \%in\% hom_sum$Community.Area)]
 df_additions <- data.frame(Community.Area = additions, homicides = 0)
