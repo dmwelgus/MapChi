@@ -24,7 +24,7 @@ length_15 <- function(x) {
     x <- x
 
   } else {
-    x <- rep(NA, 15)
+    x <- c(x, rep(NA, 15-length(x)))
 
   }
 
