@@ -71,7 +71,7 @@ convert <- function(df, lat, long, epsg = 4326) {
 
 #' Locates spatial coordinates within user-specified regions.
 #' @param df A data frame with lat/long or X/Y coordinates.
-#' @param regions The type of region. Options include: "CAs", "districts", "tracts", "zips", and "wards."
+#' @param regions The type of region. Options include: "CAs", "districts", "tracts", "zips", "wards", and "beats."
 #' @param lat Name of the field storing latitude. Should be in quotes.
 #' @param long Name of the field storing longitude. Should be in quotes.
 #' @param X The 'X coordinate' you find on some tables from the data portal.
@@ -119,8 +119,9 @@ get_regions <- function(df, regions, lat, long, X = NULL, Y = NULL, epsg = 4326)
 
   regional_df <- sp::over(df_comp, sp_df)
 
-  keep_vars <- list(CAs = c("AREA_NUMBE", "COMMUNITY"), tracts = c("TRACTCE10"), districts = c("DIST_NUM"),
-                    zips = c("ZIP"), wards = c("ward"))
+  keep_vars <- list(CAs = c("AREA_NUMBE", "COMMUNITY"), tracts = c("TRACTCE10"), 
+                    districts = c("DIST_NUM"), zips = c("ZIP"), wards = c("ward"), 
+                    beats = c("beat_num"))
 
   keepers <- keep_vars[[regions]]
   regional_df[keepers] <- lapply(regional_df[keepers], as.character)

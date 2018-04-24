@@ -6,8 +6,8 @@
 #
 #' @param background The background color.
 #' @param lines The line color.
-#' @param regions The type of region to plot. Options include: "CAs", "tracts," "districts,"
-#' and "zips."
+#' @param regions The type of region to plot. Options include: "CAs", "tracts," 
+#' "districts," and "zips."
 #' @param title Title.
 #' @param title_size Title size.
 #'
@@ -21,12 +21,14 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
   
   spatial_df <- get(regions)
   
-  map <- ggplot2::ggplot(spatial_df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group), fill = background) +
+  map <- ggplot2::ggplot(spatial_df) + 
+    ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group), fill = background) +
     ggplot2::geom_path(ggplot2::aes(long, lat, group = group), color = lines) +
     ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_blank(), axis.title = ggplot2::element_blank(),
                    plot.title = ggplot2::element_text(size = title_size),
-                   panel.background = ggplot2::element_rect(fill = "white"), panel.grid.major = ggplot2::element_line(colour = "white"),
+                   panel.background = ggplot2::element_rect(fill = "white"), 
+                   panel.grid.major = ggplot2::element_line(colour = "white"),
                    panel.grid.minor = ggplot2::element_line(colour = "white")) +
     ggplot2::coord_equal() +
     ggplot2::ggtitle(title)
@@ -74,9 +76,10 @@ map_chi <- function(background, lines, regions = "CAs", title = NULL, title_size
 #'                              na_replace = 0)
 
 #' @export
-heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, legend_name, palette = NULL,
-                                low_color = "#fff5eb", high_color = "#7f2704", na_replace = NA,
-                                lines = "black", title = NULL, title_size = 15, region_labels = FALSE) {
+heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, 
+                                legend_name, palette = NULL, low_color = "#fff5eb", 
+                                high_color = "#7f2704", na_replace = NA, lines = "black", 
+                                title = NULL, title_size = 15, region_labels = FALSE) {
   
   if (region_labels == TRUE & !regions %in% c("CAs", "districts")) {
     stop("region_labels only available for Community Areas and Police Districts")
@@ -119,30 +122,40 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
   
   if (is.null(lines)) {
     
-    map_output <- ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
-      ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
-                     axis.text.y = ggplot2::element_blank(), axis.title = ggplot2::element_blank(),
+    map_output <- ggplot2::ggplot(df) + 
+      ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
+      ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
+                     axis.text.x = ggplot2::element_blank(),
+                     axis.text.y = ggplot2::element_blank(), 
+                     axis.title = ggplot2::element_blank(),
                      plot.title = ggplot2::element_text(size = title_size),
-                     panel.background = ggplot2::element_rect(fill = "white"), panel.grid.major = ggplot2::element_line(colour = "white"),
+                     panel.background = ggplot2::element_rect(fill = "white"), 
+                     panel.grid.major = ggplot2::element_line(colour = "white"),
                      panel.grid.minor = ggplot2::element_line(colour = "white")) +
       ggplot2::coord_equal() +
       ggplot2::scale_fill_continuous(low = min_color, high = max_color,
-                                     guide = ggplot2::guide_colorbar(title = legend_name, title.theme = ggplot2::element_text(size = 13, angle = 0),
+                                     guide = ggplot2::guide_colorbar(title = legend_name, 
+                                                                     title.theme = ggplot2::element_text(size = 13, angle = 0),
                                                                      label.theme = ggplot2::element_text(size = 11, angle = 0))) +
       ggplot2::ggtitle(title)
     
   } else {
     
-    map_output <- ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
+    map_output <- ggplot2::ggplot(df) + 
+      ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
       ggplot2::geom_path(ggplot2::aes(long, lat, group = group), color = lines) +
-      ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
-                     axis.text.y = ggplot2::element_blank(), axis.title = ggplot2::element_blank(),
+      ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
+                     axis.text.x = ggplot2::element_blank(),
+                     axis.text.y = ggplot2::element_blank(), 
+                     axis.title = ggplot2::element_blank(),
                      plot.title = ggplot2::element_text(size = title_size),
-                     panel.background = ggplot2::element_rect(fill = "white"), panel.grid.major = ggplot2::element_line(colour = "white"),
+                     panel.background = ggplot2::element_rect(fill = "white"), 
+                     panel.grid.major = ggplot2::element_line(colour = "white"),
                      panel.grid.minor = ggplot2::element_line(colour = "white")) +
       ggplot2::coord_equal() +
       ggplot2::scale_fill_continuous(low = min_color, high = max_color,
-                                     guide = ggplot2::guide_colorbar(title = legend_name, title.theme = ggplot2::element_text(size = 13, angle = 0),
+                                     guide = ggplot2::guide_colorbar(title = legend_name, 
+                                                                     title.theme = ggplot2::element_text(size = 13, angle = 0),
                                                                      label.theme = ggplot2::element_text(size = 11, angle = 0))) +
       ggplot2::ggtitle(title)
   }
@@ -155,8 +168,13 @@ heat_map_continuous <- function(regions, summary_df, regions_var,  fill_var, leg
   } else {
     
     centers <- sp::coordinates(step_1)
-    center_df <- data.frame(num = step_1@data[[merge_var.x]], center_x = centers[, 1], center_y = centers[, 2])
-    map_output + ggplot2::geom_text(data = center_df, ggplot2::aes(x = center_x, y = center_y, label = num))
+    center_df <- data.frame(num = step_1@data[[merge_var.x]], 
+                            center_x = centers[, 1], 
+                            center_y = centers[, 2])
+    map_output + ggplot2::geom_text(data = center_df, 
+                                    ggplot2::aes(x = center_x, 
+                                                 y = center_y, 
+                                                 label = num))
   }
 }
   
@@ -246,29 +264,41 @@ heat_map_discrete <- function(regions, summary_df, regions_var,
   df <- df[order(df$order), ]
   
   if (is.null(lines)) {
-    map_output <- ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
-      ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
-                     axis.text.y = ggplot2::element_blank(), axis.title = ggplot2::element_blank(),
+    map_output <- ggplot2::ggplot(df) + 
+      ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
+      ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
+                     axis.text.x = ggplot2::element_blank(),
+                     axis.text.y = ggplot2::element_blank(), 
+                     axis.title = ggplot2::element_blank(),
                      plot.title = ggplot2::element_text(size = title_size),
-                     panel.background = ggplot2::element_rect(fill = "white"), panel.grid.major = ggplot2::element_line(colour = "white"),
+                     panel.background = ggplot2::element_rect(fill = "white"), 
+                     panel.grid.major = ggplot2::element_line(colour = "white"),
                      panel.grid.minor = ggplot2::element_line(colour = "white")) +
       ggplot2::coord_equal() +
-      ggplot2::scale_fill_manual(values = palette, guide = ggplot2::guide_legend(title = legend_name, title.theme = ggplot2::element_text(size = 13, angle = 0),
-                                                                                 label.theme = ggplot2::element_text(size = 11, angle = 0))) +
+      ggplot2::scale_fill_manual(values = palette, 
+                                 guide = ggplot2::guide_legend(title = legend_name, 
+                                                               title.theme = ggplot2::element_text(size = 13, angle = 0), 
+                                                               label.theme = ggplot2::element_text(size = 11, angle = 0))) +
       ggplot2::ggtitle(title)
     
   } else {
     
-    map_output <- ggplot2::ggplot(df) + ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
+    map_output <- ggplot2::ggplot(df) + 
+      ggplot2::geom_polygon(ggplot2::aes(long, lat, group = group, fill = fill_it)) +
       ggplot2::geom_path(ggplot2::aes(long, lat, group = group), color = lines) +
-      ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank(),
-                     axis.text.y = ggplot2::element_blank(), axis.title = ggplot2::element_blank(),
+      ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
+                     axis.text.x = ggplot2::element_blank(),
+                     axis.text.y = ggplot2::element_blank(), 
+                     axis.title = ggplot2::element_blank(),
                      plot.title = ggplot2::element_text(size = title_size),
-                     panel.background = ggplot2::element_rect(fill = "white"), panel.grid.major = ggplot2::element_line(colour = "white"),
+                     panel.background = ggplot2::element_rect(fill = "white"), 
+                     panel.grid.major = ggplot2::element_line(colour = "white"),
                      panel.grid.minor = ggplot2::element_line(colour = "white")) +
       ggplot2::coord_equal() +
-      ggplot2::scale_fill_manual(values = palette, guide = ggplot2::guide_legend(title = legend_name, title.theme = ggplot2::element_text(size = 13, angle = 0),
-                                                                                 label.theme = ggplot2::element_text(size = 11, angle = 0))) +
+      ggplot2::scale_fill_manual(values = palette, 
+                                 guide = ggplot2::guide_legend(title = legend_name, 
+                                                               title.theme = ggplot2::element_text(size = 13, angle = 0),
+                                                               label.theme = ggplot2::element_text(size = 11, angle = 0))) +
       ggplot2::ggtitle(title)
   }
   
@@ -278,8 +308,13 @@ heat_map_discrete <- function(regions, summary_df, regions_var,
   } else {
     
     centers <- sp::coordinates(step_1)
-    center_df <- data.frame(num = step_1@data[[merge_var.x]], center_x = centers[, 1], center_y = centers[, 2])
-    map_output + ggplot2::geom_text(data = center_df, ggplot2::aes(x = center_x, y = center_y, label = num))
+    center_df <- data.frame(num = step_1@data[[merge_var.x]], 
+                            center_x = centers[, 1], 
+                            center_y = centers[, 2])
+    map_output + ggplot2::geom_text(data = center_df, 
+                                    ggplot2::aes(x = center_x, 
+                                                 y = center_y, 
+                                                 label = num))
   }
   
 }
